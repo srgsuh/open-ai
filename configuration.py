@@ -12,5 +12,8 @@ def get_config_parameter(parameter_name: str) -> str:
         raise ConfigurationError(f"Missing configuration for the parameter: {parameter_name}")
     return parameter
 
-API_KEY: str = get_config_parameter("API_KEY")
-URL_CURRENT = get_config_parameter("URL_CURRENT")
+def get_api_key() -> str:
+    return get_config_parameter("API_KEY")
+
+def get_url() -> str:
+    return get_config_parameter("URL_CURRENT")
