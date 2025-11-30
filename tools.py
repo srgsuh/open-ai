@@ -35,3 +35,26 @@ def __parse_response(data: dict[str, Any]) -> dict[str, str]:
         "wind speed": current_weather.get("wind_kph", "")
     }
 
+def get_weather(city_name: str) -> str:
+    description: str = ""
+    try:
+        data: dict[str, str] = __parse_response(__get_api_response(city_name))
+        today: str = datetime.now().strftime("%d.%m.%Y")
+        city = data["city"] or city_name
+        temperature = data["temperature"] or __placeholder
+        condition = data["condition"] or __placeholder
+        humidity = data["humidity"] or __placeholder
+        wind_speed = data["wind speed"] or __placeholder
+        description = (
+            f"Weather in {city} on {today}: "
+            f"{temperature}°C, {condition}. "
+            f"Humidity: {humidity}%, "
+            f"Wind: {wind_speed} km/h."
+        )
+    except Exception as e:
+        description = f"Weather forecast is unavailable. Error: {str(e)}"
+
+    return description
+
+if __name__ == "__main__":
+    print(get_weather("11"))
