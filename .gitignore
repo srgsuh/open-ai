@@ -1,3 +1,4 @@
 activate_env.bat
 .vscode
 .env
+__pycache__
