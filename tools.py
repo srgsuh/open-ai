@@ -21,9 +21,9 @@ def __get_api_response(city_name: str) -> dict[str, Any]:
     response.raise_for_status()
     return response.json()
 
-def __parse_response(data: dict[str, Any]) -> dict[str, str]:
-    location: dict[str, Any] = data.get("location", __empty_dict)
-    current_weather: dict[str, Any] = data.get("current", __empty_dict)
+def __parse_response(json_data: dict[str, Any]) -> dict[str, str]:
+    location: dict[str, Any] = json_data.get("location", __empty_dict)
+    current_weather: dict[str, Any] = json_data.get("current", __empty_dict)
     if not location or not current_weather:
         raise UnknownLocationError("Unknown city name")
     
@@ -35,26 +35,31 @@ def __parse_response(data: dict[str, Any]) -> dict[str, str]:
         "wind speed": current_weather.get("wind_kph", "")
     }
 
+def __weather_data_to_str(data: dict[str, str]) -> str:
+    today: str = datetime.now().strftime("%d.%m.%Y")
+    city = data["city"]
+    temperature = data["temperature"] or __placeholder
+    condition = data["condition"] or __placeholder
+    humidity = data["humidity"] or __placeholder
+    wind_speed = data["wind speed"] or __placeholder
+    return (
+        f"Weather in {city} on {today}: "
+        f"{temperature}°C, {condition}. "
+        f"Humidity: {humidity}%, "
+        f"Wind: {wind_speed} km/h."
+    )
+
 def get_weather(city_name: str) -> str:
     description: str = ""
     try:
-        data: dict[str, str] = __parse_response(__get_api_response(city_name))
-        today: str = datetime.now().strftime("%d.%m.%Y")
-        city = data["city"] or city_name
-        temperature = data["temperature"] or __placeholder
-        condition = data["condition"] or __placeholder
-        humidity = data["humidity"] or __placeholder
-        wind_speed = data["wind speed"] or __placeholder
-        description = (
-            f"Weather in {city} on {today}: "
-            f"{temperature}°C, {condition}. "
-            f"Humidity: {humidity}%, "
-            f"Wind: {wind_speed} km/h."
-        )
+        json_data: dict[str, Any] = __get_api_response(city_name)
+        weather_data: dict[str, str] = __parse_response(json_data)
+        description = __weather_data_to_str(weather_data)
     except Exception as e:
-        description = f"Weather forecast is unavailable. Error: {str(e)}"
+        description = f"Weather forecast in {city_name} is unavailable. Error: {str(e)}"
 
     return description
 
 if __name__ == "__main__":
     print(get_weather("11"))
+    print(get_weather("oooooooooopsss"))
