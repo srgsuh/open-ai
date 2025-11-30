@@ -12,6 +12,14 @@ __TEMP: str = "temp"
 __CONDITION: str = "condition"
 __HUMIDITY: str = "humidity"
 __WIND: str = "wind_speed"
+__DATE: str = "date"
+
+__WEATHER_TEMPLATE = (
+    f"Weather in {{{__CITY}}} on {{{__DATE}}}: "
+    f"{{{__TEMP}}}°C, {{{__CONDITION}}}. "
+    f"Humidity: {{{__HUMIDITY}}}%, "
+    f"Wind: {{{__WIND}}} km/h."
+)
 
 class UnknownLocationError(RuntimeError):
     """City name not found"""
@@ -44,17 +52,7 @@ def __parse_response(json_data: dict[str, Any]) -> dict[str, str | None]:
 
 def __weather_data_to_str(data: dict[str, str | None]) -> str:
     today: str = datetime.now().strftime("%d.%m.%Y")
-    city = data[__CITY]
-    temperature = data[__TEMP]
-    condition = data[__CONDITION]
-    humidity = data[__HUMIDITY]
-    wind_speed = data[__WIND]
-    return (
-        f"Weather in {city} on {today}: "
-        f"{temperature}°C, {condition}. "
-        f"Humidity: {humidity}%, "
-        f"Wind: {wind_speed} km/h."
-    )
+    return __WEATHER_TEMPLATE.format_map({**data, __DATE: today})
 
 def get_weather(city_name: str) -> str:
     description: str = ""
