@@ -15,7 +15,6 @@ def test_mocked_weather_success() -> None:
     location = {"name": __mock_str}
     current = {"condition": condition, "temp_c": __mock_num, "humidity": __mock_num, "wind_kph": __mock_num}
     mock_json = {"location": location,"current": current}
-    print(str(mock_json))
 
     responses.add(
         method=responses.GET,
@@ -31,3 +30,13 @@ def test_mocked_weather_success() -> None:
         assert f"Wind: {__mock_num} km/h." in res
         assert f"Humidity: {__mock_num}%" in res
 
+@responses.activate
+def test_mocked_weather_err() -> None:
+    responses.add(
+        method=responses.GET,
+        url=__url,
+        status=400
+    )
+    with mock.patch.dict(os.environ, {"API_KEY": __mock_key, "URL_CURRENT": __mock_url}):
+        res: str = get_weather(__mock_str)
+        assert f"Weather forecast in {__mock_str} is unavailable. Error" in res
