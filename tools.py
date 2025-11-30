@@ -1,6 +1,6 @@
 from typing import Any
 import requests
-from configuration import API_KEY, URL_CURRENT
+from configuration import get_api_key, get_url
 from datetime import datetime
 
 __placeholder: str = "unknown"
@@ -11,13 +11,13 @@ class UnknownLocationError(RuntimeError):
 
 def __query_params(city_name: str) -> dict[str, str]:
     return {
-        "key": API_KEY,
+        "key": get_api_key(),
         "q": city_name,
         "aqi": "no"
     }
 
 def __get_api_response(city_name: str) -> dict[str, Any]:
-    response = requests.get(URL_CURRENT, params=__query_params(city_name))
+    response = requests.get(get_url(), params=__query_params(city_name))
     response.raise_for_status()
     return response.json()
 
@@ -38,10 +38,10 @@ def __parse_response(json_data: dict[str, Any]) -> dict[str, str]:
 def __weather_data_to_str(data: dict[str, str]) -> str:
     today: str = datetime.now().strftime("%d.%m.%Y")
     city = data["city"]
-    temperature = data["temperature"] or __placeholder
-    condition = data["condition"] or __placeholder
-    humidity = data["humidity"] or __placeholder
-    wind_speed = data["wind speed"] or __placeholder
+    temperature = data["temperature"] if data["temperature"] is not None else __placeholder
+    condition = data["condition"] if data["condition"] is not None else __placeholder
+    humidity = data["humidity"] if data["humidity"] is not None else __placeholder
+    wind_speed = data["wind speed"] if data["wind speed"] is not None else __placeholder
     return (
         f"Weather in {city} on {today}: "
         f"{temperature}°C, {condition}. "
