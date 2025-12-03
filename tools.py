@@ -2,6 +2,7 @@ from typing import Any, Callable
 import requests
 from configuration import get_api_key, get_url
 from datetime import datetime
+from ltr_evaluation import ltr_eval
 
 __placeholder: str = "unknown"
 __empty_dict: dict[str, Any] = {}
@@ -66,7 +67,8 @@ def get_weather(city_name: str) -> str:
     return description
 
 TOOLS: dict[str, Callable] = {
-    "get_weather": get_weather
+    "get_weather": get_weather,
+    "ltr_eval": ltr_eval
 }
 
 if __name__ == "__main__":
