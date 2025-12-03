@@ -27,7 +27,7 @@ def test_mocked_weather_success(monkeypatch) -> None:
     res: str = get_weather(__mock_str)
 
     assert f"Weather in {__mock_str}" in res
-    assert f"{__mock_num}°C" in res
+    assert f"{__mock_num}C" in res
     assert f"Wind: {__mock_num} km/h." in res
     assert f"Humidity: {__mock_num}%" in res
         
