@@ -6,6 +6,7 @@ import re
 import json
 from thinking_dots import start_thinking_dots
 import threading
+from logs import debug
 
 URL: str = "http://localhost:11434/api/chat"
 MODEL_NAME: str = "phi3"
@@ -62,6 +63,7 @@ def process_LLM(text: str) -> dict:
 
 
 if __name__ == "__main__":
+    debug("Start")
     messages = [
         {
             "role": "System",
@@ -70,10 +72,12 @@ if __name__ == "__main__":
     ]
     chat_request(messages)
     print("Starting a phi3 chat. Type 'exit' to quit.")
+    debug("Chat is started")
     while(True):
         user_input: str = input("You: ")
         if (user_input.lower() == 'exit'):
             print("Closing the chat. Thank you. Bye!")
+            debug("Chat is closed")
             break
         messages.append({
             "role": "user",
