@@ -46,6 +46,21 @@ def call_tool(tool_data: dict) -> str:
     return result
 
 def process_LLM(messages: list) -> str:
+    reply: str = chat_request(messages)
+    tool_data: dict | None = extract_json(reply)
+    if tool_data:
+        tool_response: str = call_tool(tool_data)
+        debug(f"TOOL RESPONSE = {tool_response}")
+        if tool_response:
+            messages.append({
+                "role": "tool",
+                "content": json.dumps({"weather": tool_response})
+            })
+            reply = tool_response
+    
+    return reply
+
+def cycle_LLM(messages: list) -> str:
     turn, max_turns = 0, 10
     while turn < max_turns:
         reply: str = chat_request(messages)
