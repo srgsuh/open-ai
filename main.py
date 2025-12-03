@@ -16,7 +16,7 @@ def chat_request(messages: list) -> str:
         "model": MODEL_NAME,
         "messages": messages,
         "stream": False,
-        "options": {"temperature": 0.05}
+        "options": {"temperature": 0.0}
     }
     response = requests.post(URL, json=payload)
     response.raise_for_status()
@@ -49,6 +49,7 @@ def process_LLM(messages: list) -> str:
     reply: str = chat_request(messages)
     tool_data: dict | None = extract_json(reply)
     if tool_data:
+        debug(f"TOOL CALL = {tool_data}")
         tool_response: str = call_tool(tool_data)
         debug(f"TOOL RESPONSE = {tool_response}")
         if tool_response:
