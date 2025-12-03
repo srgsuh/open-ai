@@ -8,6 +8,11 @@ from thinking_dots import start_thinking_dots
 import threading
 from logs import debug
 
+SYS_ROLE: str = "system"
+LLM_ROLE: str = "assistant"
+USER_ROLE: str = "user"
+TOOL_ROLE: str = "tool"
+
 URL: str = "http://localhost:11434/api/chat"
 MODEL_NAME: str = "phi3"
 
@@ -58,7 +63,8 @@ def process_LLM(messages: list) -> str:
                 "content": json.dumps({"weather": tool_response})
             })
             reply = tool_response
-    
+    messages.append({"role": LLM_ROLE, "content": reply})
+
     return reply
 
 def cycle_LLM(messages: list) -> str:
@@ -75,22 +81,17 @@ def cycle_LLM(messages: list) -> str:
             debug(f"TOOL RESPONSE = {tool_response}")
             if tool_response:
                 messages.append({
-                    "role": "tool",
+                    "role": TOOL_ROLE,
                     "content": json.dumps({"weather": tool_response})
                 })
-    messages.append({"role": "assistant", "content": reply})
+    messages.append({"role": LLM_ROLE, "content": reply})
 
     return reply
 
 
 if __name__ == "__main__":
     debug("Start")
-    messages = [
-        {
-            "role": "System",
-            "content": SYSTEM_CONTENT
-        }
-    ]
+    messages = [{"role": SYS_ROLE, "content": SYSTEM_CONTENT}]
     chat_request(messages)
     print("Starting a phi3 chat. Type 'exit' to quit.")
     debug("Chat is started")
@@ -101,7 +102,7 @@ if __name__ == "__main__":
             debug("Chat is closed")
             break
         messages.append({
-            "role": "user",
+            "role": USER_ROLE,
             "content": user_input
         })
         stop_event: threading.Event = start_thinking_dots("Model is thinking", 0.5)

@@ -6,15 +6,20 @@ Available tools:
 2. ltr_eval(expression: str)
 
 General Rules:
-1. Your task is to decide whether the user request REQUIRES a tool.
-2. If a request requires a tool, you MUST respond with a tool call.
-3. All tool calls must be returned as EXACT JSON of the following form:
+1. Your task is to decide whether the user request REQUIRES a tool. If a request requires a tool, you MUST respond with a tool call.
+2. All tool calls must be returned as EXACT JSON of the following form:
    {"tool": "<tool_name>", "arguments": {...}}
    - No backticks
    - No markdown
    - No extra text before or after
    - No commentary
-4. If a tool is NOT required, respond using natural language ONLY.
+3. If user requests data about a capital city of some country, answer with EXACT JSON
+of the following format: 
+{
+   "country": ...,
+   "capital": ...
+}
+4. If a tool is NOT required, and request isn't about capital, respond using natural language ONLY.
    - Do NOT output JSON
    - Do NOT call a tool
 
