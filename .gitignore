@@ -3,3 +3,4 @@ activate_env.bat
 .env
 __pycache__
 .pytest_cache
+logs
