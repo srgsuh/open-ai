@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Callable
 import requests
 from configuration import get_api_key, get_url
 from datetime import datetime
@@ -14,9 +14,9 @@ __HUMIDITY: str = "humidity"
 __WIND: str = "wind_speed"
 __DATE: str = "date"
 
-__WEATHER_TEMPLATE = (
+__WEATHER_TEMPLATE: str = (
     f"Weather in {{{__CITY}}} on {{{__DATE}}}: "
-    f"{{{__TEMP}}}°C, {{{__CONDITION}}}. "
+    f"{{{__TEMP}}}C, {{{__CONDITION}}}. "
     f"Humidity: {{{__HUMIDITY}}}%, "
     f"Wind: {{{__WIND}}} km/h."
 )
@@ -64,6 +64,10 @@ def get_weather(city_name: str) -> str:
         description = f"Weather forecast in {city_name} is unavailable. Error: {str(e)}"
 
     return description
+
+TOOLS: dict[str, Callable] = {
+    "get_weather": get_weather
+}
 
 if __name__ == "__main__":
     print(get_weather("Los Angeles"))
