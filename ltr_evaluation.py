@@ -10,10 +10,8 @@ def __compute_one(op1: float, op2: float, operation_sign: str) -> float:
     return operation_function(op1, op2)
 
 def __eval_no_parentheses(expr: str) -> float:
-    print(f"expression = {expr}")
     operations: list[str] = signed_num_pattern.split(expr)
     operands: list[str] = signed_num_pattern.findall(expr) # fix to work with sci-format (e.g. 1e-2)
-    print(f"operation = {operations}, operand = {operands}")
     res = float(operands[0])
     for i in range(1, len(operands)):
         operation_sign = operations[i] if operations[i] else '+'
@@ -30,3 +28,12 @@ def eval(expr: str) -> float:
         expr = expr[:mo.start()] + str(value) + expr[mo.end():]
 
     return __eval_no_parentheses(expr)
+
+def ltr_eval(expression: str) -> str:
+    result: str = ""
+    try:
+        result = str(eval(expression))
+    except Exception:
+        result = f"Error: cannot process expression: {expression}"
+
+    return result
