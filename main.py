@@ -45,21 +45,26 @@ def call_tool(tool_data: dict) -> str:
     
     return result
 
-def process_LLM(text: str) -> dict:
-    res: dict = {
-        "role": "assistant",
-        "content": text
-    }
-    tool_data: dict | None = extract_json(text)
-    if tool_data:
-        tool_response: str = call_tool(tool_data)
-        if tool_response:
-            res = {
-                "role": "tool",
-                "content": json.dumps({"result": tool_response})
-            }
+def process_LLM(messages: list) -> str:
+    turn, max_turns = 0, 10
+    while turn < max_turns:
+        reply: str = chat_request(messages)
+        tool_data: dict | None = extract_json(reply)
+        if tool_data is None:
+            break
+        else:
+            turn += 1
+            debug(f"TOOL CALL #{turn} with the tool {tool_data}")
+            tool_response: str = call_tool(tool_data)
+            debug(f"TOOL RESPONSE = {tool_response}")
+            if tool_response:
+                messages.append({
+                    "role": "tool",
+                    "content": json.dumps({"weather": tool_response})
+                })
+    messages.append({"role": "assistant", "content": reply})
 
-    return res
+    return reply
 
 
 if __name__ == "__main__":
@@ -84,9 +89,7 @@ if __name__ == "__main__":
             "content": user_input
         })
         stop_event: threading.Event = start_thinking_dots("Model is thinking", 0.5)
-        reply: str = chat_request(messages)
-        response: dict = process_LLM(reply)
+        response: str = process_LLM(messages)
         stop_event.set()
-        messages.append(response)
-        print(f"\nAgent: {response["content"]}")
+        print(f"\nAgent: {response}")
         print("_"*60)
