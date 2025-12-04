@@ -1,6 +1,6 @@
 import requests
 from typing import Any, Callable
-from tools import TOOLS
+from tools import call_tool
 import re
 import json
 from logs import debug
@@ -35,15 +35,6 @@ def extract_json(text: str) -> dict | None:
             result = json.loads(match.group())
         except Exception:
             pass
-    
-    return result
-
-def call_tool(tool_data: dict) -> str:
-    result: str = ""
-    callable: Callable | None = TOOLS.get(tool_data.get("tool", ""))
-    if callable:
-        arguments: dict = tool_data.get("arguments", {})
-        result = callable(**arguments)
     
     return result
 
