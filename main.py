@@ -5,12 +5,13 @@ from thinking_dots import start_thinking_dots
 import threading
 from logs import debug
 from system_rules import APP_SYSTEM_CONTENT
-from chat_request import chat_request, process_LLM, SYS_ROLE, USER_ROLE
+from chat_request import chat_request, process_LLM, ChatHistory
 
 if __name__ == "__main__":
     debug("Start")
-    messages = [{"role": SYS_ROLE, "content": APP_SYSTEM_CONTENT}]
-    chat_request(messages)
+    history: ChatHistory = ChatHistory()
+    history.sys_message(APP_SYSTEM_CONTENT)
+    chat_request(history)
     print("Starting a phi3 chat. Type 'exit' to quit.")
     debug("Chat is started")
     while(True):
@@ -19,12 +20,9 @@ if __name__ == "__main__":
             print("Closing the chat. Thank you. Bye!")
             debug("Chat is closed")
             break
-        messages.append({
-            "role": USER_ROLE,
-            "content": user_input
-        })
+        history.user_message(user_input)
         stop_event: threading.Event = start_thinking_dots("Model is thinking", 0.5)
-        response: str = process_LLM(messages)
+        response: str = process_LLM(history)
         stop_event.set()
         print(f"\nAgent: {response}")
         print("_"*60)

@@ -2,7 +2,7 @@ from system_rules import INNER_SYSTEM_CONTENT
 import re
 import json
 from logs import debug
-from chat_request import chat_request, SYS_ROLE, USER_ROLE
+from chat_request import chat_request, ChatHistory
 
 def extract_json(text: str) -> dict | None:
     json_re: str = r"\{.*country.*currency_name.*currency_code.*\}"
@@ -18,18 +18,9 @@ def extract_json(text: str) -> dict | None:
     return result
 
 def travel_info(country_from: str, country_to: str, code_from: str) -> str:
-    messages: list[dict] = [
-        {
-            "role": SYS_ROLE,
-            "content": INNER_SYSTEM_CONTENT
-        },
-        {
-            "role": USER_ROLE,
-            "content": f"currency of {country_to}"
-        }
-    ]
+    history = ChatHistory().sys_message(INNER_SYSTEM_CONTENT).user_message(f"currency of {country_to}")
     debug(f"Requesting data about {country_to}")
-    raw_reply: str = chat_request(messages)
+    raw_reply: str = chat_request(history)
     debug(f"Data about {country_to} = {raw_reply}")
     json_reply = extract_json(raw_reply)
     debug(f"Parsed data about {country_to} = {json_reply}")
