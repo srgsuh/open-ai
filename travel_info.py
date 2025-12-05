@@ -18,13 +18,14 @@ def extract_json(text: str) -> dict | None:
     return result
 
 def travel_info(country_from: str, country_to: str, code_from: str) -> str:
-    history = ChatHistory().sys_message(INNER_SYSTEM_CONTENT).user_message(f"currency of {country_to}")
+    history = ChatHistory().sys_message(INNER_SYSTEM_CONTENT)
+    history.user_message(f"The currency of {country_to}")
+
     debug(f"Requesting data about {country_to}")
     raw_reply: str = chat_request(history)
     debug(f"Data about {country_to} = {raw_reply}")
-    json_reply = extract_json(raw_reply)
+    json_reply: dict = extract_json(raw_reply) or {}
     debug(f"Parsed data about {country_to} = {json_reply}")
-    code_to: str = "unknown"
-    if json_reply is not None:
-        code_to = json_reply.get("currency_code", code_to)
+    code_to: str = json_reply.get("currency_code", "unknown")
+        
     return (f"Travel from {country_from} to {country_to}, code_from={code_from}, code_to={code_to}")

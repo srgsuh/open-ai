@@ -1,5 +1,5 @@
 import requests
-from typing import Any, Callable, Self
+from typing import Any, Callable, Iterator, Self
 from tools import call_tool
 import re
 import json
@@ -23,6 +23,9 @@ class ChatHistory:
             "content": content
         })
         return self
+    
+    def __iter__(self) -> Iterator[dict]:
+        return iter(self.messages)
     
     def sys_message(self, content: str) -> Self:
         return self.__append_message(ChatHistory.SYS_ROLE, content)
