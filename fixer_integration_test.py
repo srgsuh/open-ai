@@ -9,7 +9,7 @@ __mock_url: str = "http://mock.mock"
 @responses.activate
 def test_get_rate_success(monkeypatch) -> None:
     monkeypatch.setenv("FIXER_URL", __mock_url)
-    monkeypatch.setenv("FIXER_API_KEY", __mock_url)
+    monkeypatch.setenv("FIXER_API_KEY", __mock_key)
     key1, key2 = "key1", "key2"
     __mock_rates: dict[str, float] = { key1: 2.0, key2: 3.0 }
     __mock_response: dict = {
