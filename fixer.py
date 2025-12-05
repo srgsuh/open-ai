@@ -23,18 +23,15 @@ class CurrencyRate:
         self.__latest_date: str = ""
         self.__latest_cache: dict = {}
     
-    def __get_latest_raw(self) -> dict:
+    def __load_rates(self) -> None:
         response = requests.get(self.__url, params={"access_key" : self.__api_key})
         response.raise_for_status()
-        return response.json()
-
-    def __load_rates(self) -> None:
-        raw_response: dict = self.__get_latest_raw()
-        if not raw_response[SUCCESS_KEY]:
+        response_json: dict = response.json()
+        if not response_json[SUCCESS_KEY]:
             raise CurrencyRequestError("Currency data is unavailable now. Try again later.")
         
-        self.__latest_date = raw_response[DATE_KEY]
-        self.__latest_cache = raw_response[RATES_KEY]
+        self.__latest_date = response_json[DATE_KEY]
+        self.__latest_cache = response_json[RATES_KEY]
 
     def __get_latest(self) -> None:
         today: str = datetime.now().strftime(FIXER_DATE_FMT)
@@ -42,12 +39,12 @@ class CurrencyRate:
             self.__load_rates()
 
     def get_rate(self, code_from: str, code_to: str) -> float:
-        self.__get_latest()
         def get_euro_rate(code: str) -> float:
             if not code in self.__latest_cache:
                 raise ValueError(f"Currency code {code} is not supported")
             return self.__latest_cache[code]
-    
+
+        self.__get_latest()
         return get_euro_rate(code_to) / get_euro_rate(code_from)
 
 CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key())
