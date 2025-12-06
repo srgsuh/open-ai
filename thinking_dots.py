@@ -1,27 +1,41 @@
 import threading
 import sys
 import time
+from typing import Self
 
 MAX_DOTS: int = 20
 
-def start_thinking_dots(label: str, interval: float = 0.5) -> threading.Event:
-    stop_event = threading.Event()
+class ThinkingDots:
+    def __init__(self, label: str, interval: float = 0.5, dots: int = MAX_DOTS):
+        self.label = label
+        self.interval = interval
+        self.dots = dots
 
-    def worker() -> None:
-        sys.stdout.write(label)
-        sys.stdout.flush()
-        dots = 0
-        while not stop_event.is_set():
-            sys.stdout.write(".")
-            sys.stdout.flush()
-            dots += 1
-            if dots > MAX_DOTS:
-                sys.stdout.write("\n"+label)
-                sys.stdout.flush()
-                dots = 0
-            time.sleep(interval)
+    def __enter__(self) -> Self:
+        self.stop_event = self.__start_thinking_dots()
+        return self
     
-    th: threading.Thread = threading.Thread(target=worker)
-    th.start()
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+        self.stop_event.set()
+        return False
 
-    return stop_event
+    def __start_thinking_dots(self) -> threading.Event:
+        stop_event = threading.Event()
+        def worker() -> None:
+            sys.stdout.write(self.label)
+            sys.stdout.flush()
+            dots = 0
+            while not stop_event.is_set():
+                sys.stdout.write(".")
+                sys.stdout.flush()
+                dots += 1
+                if dots > self.dots:
+                    sys.stdout.write("\n"+self.label)
+                    sys.stdout.flush()
+                    dots = 0
+                time.sleep(self.interval)
+        
+        th: threading.Thread = threading.Thread(target=worker)
+        th.start()
+
+        return stop_event

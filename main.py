@@ -1,5 +1,4 @@
-from thinking_dots import start_thinking_dots
-import threading
+from thinking_dots import ThinkingDots
 from logs import debug
 from system_rules import APP_SYSTEM_CONTENT
 from chat_request import ChatLLM
@@ -20,12 +19,7 @@ if __name__ == "__main__":
             debug("Chat is closed")
             break
         chat.user_message(user_input)
-        try:
-            stop_event: threading.Event = start_thinking_dots("Model is thinking", 0.5)
+        with ThinkingDots("Model is thinking"):
             response: str = process_LLM(chat)
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
-        finally:
-            stop_event.set()
         print(f"\nAgent: {response}")
         print("_"*60)
