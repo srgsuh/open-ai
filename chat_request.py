@@ -12,8 +12,9 @@ class ChatHistory:
     USER_ROLE: str = "user"
     TOOL_ROLE: str = "tool"
 
-    def __init__(self) -> None:
+    def __init__(self, system_content: str) -> None:
         self.messages: list[dict] = []
+        self.append_message(ChatHistory.SYS_ROLE, system_content)
     
     def append_message(self, role: str, content: str) -> None:
         self.messages.append({ "role": role, "content": content})
@@ -21,13 +22,15 @@ class ChatHistory:
 class ChatLLM:
     def __init__(self, system_content: str, **options) -> None:
         self.__url = URL
+        self.__history = ChatHistory(system_content)
+        if not "temperature" in options:
+            options["temperature"] = 0.0
         self.__base_payload: dict[str, Any] = {
             "model": MODEL_NAME,
             "stream": False,
-            "options": options
+            "options": options,
+            "messages": self.__history.messages
         }
-        self.__history = ChatHistory()
-        self.__history.append_message(ChatHistory.SYS_ROLE, system_content)
     
     def user_message(self, content: str) -> Self:
         self.__history.append_message(ChatHistory.USER_ROLE, content)
@@ -41,11 +44,8 @@ class ChatLLM:
         self.__history.append_message(ChatHistory.LLM_ROLE, content)
         return self
     
-    def _payload(self) -> dict[str, Any]:
-        return {"messages": self.__history.messages, **self.__base_payload}
-    
     def request(self) -> str:
-        response = requests.post(self.__url, json=self._payload())
+        response = requests.post(self.__url, json=self.__base_payload)
         response.raise_for_status()
         data = response.json()
         return data["message"]["content"]
