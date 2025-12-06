@@ -17,11 +17,16 @@ def __get_api_key() -> str:
     return get_config_parameter("FIXER_API_KEY")
 
 class CurrencyRate:
-    def __init__(self, url, api_key) -> None:
+    def __init__(self, url: str, api_key: str, init_now: bool = False) -> None:
         self.__url = url
         self.__api_key = api_key
         self.__latest_date: str = ""
         self.__latest_cache: dict = {}
+        if init_now:
+            try:
+                self.__load_rates()
+            except Exception as e:
+                pass
     
     def __load_rates(self) -> None:
         response = requests.get(self.__url, params={"access_key" : self.__api_key})
@@ -47,7 +52,7 @@ class CurrencyRate:
         self.__get_latest()
         return get_euro_rate(code_to) / get_euro_rate(code_from)
 
-CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key())
+CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key(), init_now=True)
 
 if __name__ == "__main__":
     rate: float = CURRENCY_RATE.get_rate('USD', 'GBP')
