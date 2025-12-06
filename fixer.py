@@ -17,18 +17,13 @@ def __get_api_key() -> str:
     return get_config_parameter("FIXER_API_KEY")
 
 class CurrencyRate:
-    def __init__(self, url: str, api_key: str, init_now: bool = False) -> None:
+    def __init__(self, url: str, api_key: str) -> None:
         self.__url = url
         self.__api_key = api_key
         self.__latest_date: str = ""
         self.__latest_cache: dict = {}
-        if init_now:
-            try:
-                self.__load_rates()
-            except Exception as e:
-                pass
     
-    def __load_rates(self) -> None:
+    def update_rates(self) -> None:
         response = requests.get(self.__url, params={"access_key" : self.__api_key})
         response.raise_for_status()
         response_json: dict = response.json()
@@ -38,10 +33,10 @@ class CurrencyRate:
         self.__latest_date = response_json[DATE_KEY]
         self.__latest_cache = response_json[RATES_KEY]
 
-    def __get_latest(self) -> None:
+    def __check_cache(self) -> None:
         today: str = datetime.now().strftime(FIXER_DATE_FMT)
         if not (self.__latest_date == today):
-            self.__load_rates()
+            self.update_rates()
 
     def get_rate(self, code_from: str, code_to: str) -> float:
         def get_euro_rate(code: str) -> float:
@@ -49,10 +44,10 @@ class CurrencyRate:
                 raise ValueError(f"Currency code {code} is not supported")
             return self.__latest_cache[code]
 
-        self.__get_latest()
+        self.__check_cache()
         return get_euro_rate(code_to) / get_euro_rate(code_from)
 
-CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key(), init_now=True)
+CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key())
 
 if __name__ == "__main__":
     rate: float = CURRENCY_RATE.get_rate('USD', 'GBP')
