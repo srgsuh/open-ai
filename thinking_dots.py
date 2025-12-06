@@ -16,14 +16,14 @@ class ThinkingDots:
         self.dots = dots
 
     def __enter__(self) -> Self:
-        self.stop_event = self.__start_thinking_dots()
+        self.stop_event: threading.Event = self.start_thinking_dots()
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
         self.stop_event.set()
         return False
 
-    def __start_thinking_dots(self) -> threading.Event:
+    def start_thinking_dots(self) -> threading.Event:
         stop_event = threading.Event()
         def worker() -> None:
             send_to_console(self.label)
