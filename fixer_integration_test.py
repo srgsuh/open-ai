@@ -2,7 +2,6 @@ import pytest
 import responses
 from fixer import CurrencyRate, SUCCESS_KEY, RATES_KEY, DATE_KEY, FIXER_DATE_FMT
 from datetime import datetime
-import json
 
 __mock_key: str = "key"
 __mock_url: str = "http://mock.mock"
