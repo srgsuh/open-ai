@@ -10,14 +10,10 @@ CUR_NAME: str = "currency_name"
 CUR_CODE: str = "currency_code"
 
 def travel_info(country_from: str, country_to: str, code_from: str) -> str:
-    debug(f"travel_info. country_from={country_from}, country_to={country_to}, code_from={code_from}")
     result: dict[str, str | float]
     try:
-        chat = ChatLLM(INNER_SYSTEM_CONTENT, temperature=0.0)
-        raw_reply: str = chat.user_message(f"The currency of {country_to}").request()
-        debug(f"travel_info. raw_reply={raw_reply}")
+        raw_reply: str = ChatLLM(INNER_SYSTEM_CONTENT).user_message(f"The currency of {country_to}").request()
         json_reply: dict = extract_json(raw_reply, [COUNTRY, CUR_NAME, CUR_CODE]) or {}
-        debug(f"travel_info. json_reply={json_reply}")
         rate = CURRENCY_RATE.get_rate(code_from, json_reply[CUR_CODE])
         result = {
             "country_from": country_from,

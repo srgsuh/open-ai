@@ -10,7 +10,7 @@ def is_exit_request(user_input: str) -> bool:
 
 if __name__ == "__main__":
     debug("Start")
-    chat: ChatLLM = ChatLLM(APP_SYSTEM_CONTENT, temperature=0.0)
+    chat: ChatLLM = ChatLLM(APP_SYSTEM_CONTENT)
     print("Starting a phi3 chat. Type 'exit' to quit.")
     debug("Chat is started")
     while(True):
