@@ -12,7 +12,7 @@ def process_LLM(chat: ChatLLM) -> str:
         tool_response: str = call_tool(tool_data)
         debug(f"TOOL RESPONSE = {tool_response}")
         if tool_response:
-            chat.tool_message(json.dumps({"weather": tool_response}))
+            chat.tool_message(json.dumps({"response": tool_response}))
             reply = tool_response
     chat.ai_message(reply)
 
