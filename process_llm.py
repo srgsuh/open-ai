@@ -1,0 +1,19 @@
+from chat_request import chat_request, ChatHistory
+from logs import debug
+from extract_json import extract_json
+from tools import call_tool
+import json
+
+def process_LLM(history: ChatHistory) -> str:
+    reply: str = chat_request(history)
+    tool_data: dict | None = extract_json(reply, ["tool", "arguments"])
+    if tool_data:
+        debug(f"TOOL CALL = {tool_data}")
+        tool_response: str = call_tool(tool_data)
+        debug(f"TOOL RESPONSE = {tool_response}")
+        if tool_response:
+            history.tool_message(json.dumps({"weather": tool_response}))
+            reply = tool_response
+    history.ai_message(reply)
+
+    return reply

@@ -1,11 +1,9 @@
-from typing import Callable
-from tools import TOOLS
-from system_content import SYSTEM_CONTENT
 from thinking_dots import start_thinking_dots
 import threading
 from logs import debug
 from system_rules import APP_SYSTEM_CONTENT
-from chat_request import chat_request, process_LLM, ChatHistory
+from chat_request import chat_request, ChatHistory
+from process_llm import process_LLM
 
 if __name__ == "__main__":
     debug("Start")
