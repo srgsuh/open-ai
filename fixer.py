@@ -5,10 +5,7 @@ from datetime import datetime
 SUCCESS_KEY: str = "success"
 RATES_KEY: str = "rates"
 DATE_KEY: str = "date"
-FIXER_DATE_FMT: str = "%Y-%m-%d"
-
-class CurrencyRequestError(RuntimeError):
-    pass
+FIXER_DATE_FMT: str = get_config_parameter("FIXER_DATE_FMT", "%Y-%m-%d")
 
 def __get_url() -> str:
     return get_config_parameter("FIXER_URL")
@@ -19,17 +16,14 @@ def __get_api_key() -> str:
 class CurrencyRate:
     def __init__(self, url: str, api_key: str) -> None:
         self.__url = url
-        self.__api_key = api_key
+        self.__params = {"access_key" : api_key}
         self.__latest_date: str = ""
         self.__latest_cache: dict = {}
     
     def update_rates(self) -> None:
-        response = requests.get(self.__url, params={"access_key" : self.__api_key})
+        response = requests.get(self.__url, params=self.__params)
         response.raise_for_status()
         response_json: dict = response.json()
-        if not response_json[SUCCESS_KEY]:
-            raise CurrencyRequestError("Currency data is unavailable now. Try again later.")
-        
         self.__latest_date = response_json[DATE_KEY]
         self.__latest_cache = response_json[RATES_KEY]
 
@@ -48,7 +42,3 @@ class CurrencyRate:
         return get_euro_rate(code_to) / get_euro_rate(code_from)
 
 CURRENCY_RATE: CurrencyRate = CurrencyRate(__get_url(), __get_api_key())
-
-if __name__ == "__main__":
-    rate: float = CURRENCY_RATE.get_rate('USD', 'GBP')
-    print(f"1 dollar = {rate} pounds")
