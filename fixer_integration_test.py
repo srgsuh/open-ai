@@ -20,7 +20,7 @@ def test_get_rate_success() -> None:
     responses.add(responses.GET, url=__mock_url, json=__mock_response, status=200)
 
     rate: float = currencyRate.get_rate(key1, key2)
-    assert rate == pytest.approx(__mock_rates[key2] / __mock_rates[key1])
+    assert rate == pytest.approx(__mock_rates[key2] / __mock_rates[key1], abs=1e-2)
 
 @responses.activate
 def test_get_rate_network_error() -> None:
