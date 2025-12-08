@@ -16,16 +16,3 @@ def extract_json(source_str: str, words: list[str] = []) -> dict | None:
         pass
 
     return result
-
-if __name__ == "__main__":
-    string: str = """
-    JSON example: {
-        "role": "user",
-        "content": {
-            "key": "value"
-        }
-    }
-    some text there too.
-    """
-    
-    print(extract_json(string, ["content", "key", "role"]))
