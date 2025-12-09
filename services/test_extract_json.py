@@ -1,5 +1,5 @@
 import unittest as ut
-from extract_json import extract_json
+from services.extract_json import extract_json
 
 class TestExtractJSON(ut.TestCase):
     string_JSON_ok: str = """

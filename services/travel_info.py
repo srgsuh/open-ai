@@ -1,9 +1,9 @@
-from system_rules import INNER_SYSTEM_CONTENT
 import json
 from logs import debug
-from chat_request import ChatLLM
-from extract_json import extract_json
-from fixer import CURRENCY_RATE
+from services.system_rules import INNER_SYSTEM_CONTENT
+from services.chat_request import ChatLLM
+from services.extract_json import extract_json
+from services.fixer import CURRENCY_RATE
 
 COUNTRY: str = "country"
 CUR_NAME: str = "currency_name"

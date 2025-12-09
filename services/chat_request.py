@@ -1,7 +1,7 @@
 import requests
 from typing import Any, Self
-from extract_json import extract_json
 from logs import debug
+from services.extract_json import extract_json
 
 URL: str = "http://localhost:11434/api/chat"
 MODEL_NAME: str = "phi3"

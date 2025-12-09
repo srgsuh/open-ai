@@ -1,8 +1,8 @@
-from chat_request import ChatLLM
-from logs import debug
-from extract_json import extract_json
-from tools import call_tool
 import json
+from logs import debug
+from services.chat_request import ChatLLM
+from services.extract_json import extract_json
+from services.tools import call_tool
 
 def process_LLM(chat: ChatLLM) -> str:
     reply: str = chat.request()

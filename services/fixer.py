@@ -1,6 +1,6 @@
 import requests
-from configuration import get_config_parameter
 from datetime import datetime
+from configuration import get_config_parameter
 
 SUCCESS_KEY: str = "success"
 RATES_KEY: str = "rates"
