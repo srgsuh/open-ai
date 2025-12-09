@@ -1,6 +1,5 @@
 import requests
 from typing import Any, Self
-from logs import debug
 from services.extract_json import extract_json
 
 URL: str = "http://localhost:11434/api/chat"

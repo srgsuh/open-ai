@@ -1,12 +1,19 @@
+import sys
 from loguru import logger
 from configuration import get_config_parameter
 
-DEBUG_ON: str = get_config_parameter("DEBUG_ON", "")
+FILE_DEBUG_LEVEL: str = get_config_parameter("FILE_DEBUG_LEVEL", "")
+CONSOLE_DEBUG_LEVEL: str = get_config_parameter("CONSOLE_DEBUG_LEVEL", "")
 
-if DEBUG_ON:
-    logger.remove()
-    logger.add("./logs/file_{time:YYYY_MM_DD_HH_mm_ss}.log", format="{time:HH:mm:ss}: {message}", level="DEBUG")
+LOG_FORMAT: str = "{time:HH:mm:ss}: {message}"
 
-def debug(message: str) -> None:
-    if DEBUG_ON:
-        logger.debug(message)
+logger.remove()
+try:
+    if FILE_DEBUG_LEVEL:
+        logger.add("./logs/file_{time:YYYY_MM_DD_HH_mm_ss}.log", format=LOG_FORMAT, level=FILE_DEBUG_LEVEL)
+    if CONSOLE_DEBUG_LEVEL:
+        logger.add(sys.stdout, format=LOG_FORMAT, level=CONSOLE_DEBUG_LEVEL)
+except Exception as e:
+    print(f"Logger config error: {str(e)}. Starting application without logging.")
+
+__all__ = ["logger"]

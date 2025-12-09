@@ -1,5 +1,5 @@
 import json
-from logs import debug
+from logs import logger
 from services.system_rules import INNER_SYSTEM_CONTENT
 from services.chat_request import ChatLLM
 from services.extract_json import extract_json
@@ -25,5 +25,5 @@ def travel_info(country_from: str, country_to: str, code_from: str) -> str:
         }
     except Exception as e:
         result = {"error" : str(e)}
-    debug(f"travel_info. result={result}")
+    logger.debug(f"travel_info. result={result}")
     return json.dumps(result)
