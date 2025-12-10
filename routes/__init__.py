@@ -1,0 +1,1 @@
+"""Package for routes definitions"""
