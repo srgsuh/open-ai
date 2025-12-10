@@ -1,11 +1,9 @@
 from typing import Awaitable, Callable
-from fastapi import FastAPI, Request, Response
+from fastapi import Request, Response
 from logs import logger
 
-def setup_middleware(app: FastAPI) -> None:
-    @app.middleware("http")
-    async def logging_mw(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-        logger.info("request. method: %s, path: %s, port: %s", request.method, request.url.path, request.url.port)
-        response: Response = await call_next(request)
-        logger.info("response. status: %s", response.status_code)
-        return response
+async def logging_mw(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    logger.info("request. method: %s, path: %s, port: %s", request.method, request.url.path, request.url.port)
+    response: Response = await call_next(request)
+    logger.info("response. status: %s", response.status_code)
+    return response
