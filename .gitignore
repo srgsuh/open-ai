@@ -5,3 +5,4 @@ __pycache__
 .pytest_cache
 logs
 clear_logs.bat
+test_chat_integration.py
