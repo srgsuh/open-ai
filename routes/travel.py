@@ -15,3 +15,12 @@ async def post_info(request: TravelRequest) -> TravelResponse:
         capitalTo="London",
         weatherTo="chilly"
     )
+
+@travel_router.get("/info", response_model=TravelResponse, response_model_exclude_none=True)
+async def get_info(countryFrom: str, countryTo: str) -> TravelResponse:
+    return TravelResponse(
+        countryFrom=countryFrom,
+        countryTo=countryTo,
+        capitalTo="Paris",
+        weatherTo="sunny"
+    )
