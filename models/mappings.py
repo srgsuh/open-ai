@@ -1,4 +1,4 @@
-from TravelResponse import TravelResponse
+from .TravelResponse import TravelResponse
 from services.complex_service import ComplexTravelData
 
 def travel_response_mapper(data: ComplexTravelData) -> TravelResponse:
