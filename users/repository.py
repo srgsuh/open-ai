@@ -11,5 +11,8 @@ class UserRepository:
 
     def get_by_username(self, username: str) -> Optional[User]:
         return self.mock_data.get(username)
-    
-    
+
+user_repo: UserRepository = UserRepository()
+
+def get_user_repo() -> UserRepository:
+    return user_repo
