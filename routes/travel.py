@@ -6,11 +6,11 @@ from services.complex_service import complex_service
 from models.mappings import travel_response_mapper
 from auth import get_current_user
 
-travel_router = APIRouter()
+travel_router = APIRouter(dependencies=[Depends(get_current_user)])
 
 @travel_router.post("/info", response_model=TravelResponse, response_model_exclude_none=True)
-async def post_info(request: TravelRequest, user=Depends(get_current_user)) -> TravelResponse:
-    logger.debug(f"post_info. Request: {request}, user={user}")
+async def post_info(request: TravelRequest) -> TravelResponse:
+    logger.debug(f"post_info. Request: {request}")
     data = complex_service(
         request.countryFrom,
         request.countryTo,
