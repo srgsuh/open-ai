@@ -1,16 +1,16 @@
 from typing import Optional
 from users.models import User, ADMIN_ROLE, USER_ROLE
+from db import get_db_user
 
 
 class UserRepository:
-    def __init__(self) -> None:
-        self.mock_data: dict[str, User] = {
-            "user": User(username="user", role=USER_ROLE),
-            "admin": User(username="admin", role=ADMIN_ROLE)
-        }
-
     def get_by_username(self, username: str) -> Optional[User]:
-        return self.mock_data.get(username)
+        user: Optional[User] = None
+        user_data: Optional[dict] = get_db_user(username)
+        if user_data:
+            user = User(username=user_data["username"], role=user_data["role"])
+        
+        return user
 
 user_repo: UserRepository = UserRepository()
 
