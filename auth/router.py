@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from .models import AuthUser
 from .repository import get_auth_user
 from .hashing import verify
+from .jwt import issue_token
 from auth.models import LoginRequest, LoginResponse
 
 auth_router = APIRouter()
@@ -10,6 +11,7 @@ auth_router = APIRouter()
 def post_login(request: LoginRequest) -> LoginResponse:
     auth_user: AuthUser | None = get_auth_user(request.username)
     if auth_user and verify(request.password, auth_user.hashed_password):
-        return LoginResponse(token="token", token_type="bearer")
-    raise HTTPException(401, detail="Wrong credentials")
+        return LoginResponse(token=issue_token(auth_user), token_type="bearer")
+    
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Wrong credentials")
     
