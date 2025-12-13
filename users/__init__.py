@@ -1,5 +1,5 @@
 """Package for processing application user's data"""
-from .repository import UserRepository, get_user_repo
+from .repository import get_by_username
 from .models import User
 
-__all__=["UserRepository", "get_user_repo", "User"]
+__all__=["get_by_username", "User"]

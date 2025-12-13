@@ -2,7 +2,7 @@ from auth.models import AuthUser
 from fastapi import status, Depends, HTTPException
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-import users
+from users import get_by_username, User
 from configuration import get_config_parameter
 from datetime import datetime, timedelta, timezone
 import jwt
@@ -40,7 +40,7 @@ def issue_token(user: AuthUser) -> str:
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     username : str | None = None
-    user: users.User | None = None
+    user: User | None = None
     try:
         payload: dict = jwt.decode(
             jwt = token,
@@ -51,7 +51,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except Exception as e:
         pass
     
-    user = users.get_user_repo().get_by_username(username) if username else None
+    user = get_by_username(username) if username else None
     if user:
         return user
     
