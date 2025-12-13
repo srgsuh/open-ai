@@ -1,3 +1,4 @@
+import traceback
 from auth.models import AuthUser
 from fastapi import status, Depends, HTTPException
 from typing import Annotated
@@ -6,6 +7,7 @@ from users import get_by_username, User
 from configuration import get_config_parameter
 from datetime import datetime, timedelta, timezone
 import jwt
+from logs import logger
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -39,6 +41,8 @@ def issue_token(user: AuthUser) -> str:
     )
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    parts = token.split(".")
+    logger.debug(f"jwt(4)={token[:5]}, parts={len(parts)}, lengths={[len(p) for p in parts]}")
     username : str | None = None
     user: User | None = None
     try:
@@ -47,11 +51,13 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
             key = _get_secret_key(),
             algorithms=["HS256"]
         )
+        logger.debug(f"get_current_user. payload={payload}")
         username = payload.get("sub")
     except Exception as e:
-        pass
+        logger.error(f"JWT decode failed. error={e}, type={type(e)}\n{traceback.format_exc()}")
     
     user = get_by_username(username) if username else None
+    logger.debug(f"get_current_user. user={user}")
     if user:
         return user
     
