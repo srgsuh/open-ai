@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from logs import logger
 from auth import require_admin
 from models.user import User
-from users import get_statistics, collect_user_statistics
+from users import get_statistics
 
 class UserStatistics(BaseModel):
     username: str
