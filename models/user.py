@@ -9,5 +9,3 @@ class User(BaseModel):
 
     def is_admin(self) -> bool:
         return self.role == ADMIN_ROLE
-    
-__all__ = ["User"]

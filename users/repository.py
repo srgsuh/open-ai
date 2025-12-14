@@ -1,5 +1,5 @@
 from typing import Optional
-from users.models import User, ADMIN_ROLE, USER_ROLE
+from models.user import User
 import db
 
 def get_by_username(username: str) -> Optional[User]:

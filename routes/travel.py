@@ -4,9 +4,9 @@ from models.TravelRequest import TravelRequest
 from models.TravelResponse import TravelResponse
 from services.complex_service import complex_service
 from models.mappings import travel_response_mapper
-from auth import get_current_user
+from users import collect_user_statistics
 
-travel_router = APIRouter(dependencies=[Depends(get_current_user)])
+travel_router = APIRouter(dependencies=[Depends(collect_user_statistics)])
 
 @travel_router.post("/info", response_model=TravelResponse, response_model_exclude_none=True)
 async def post_info(request: TravelRequest) -> TravelResponse:

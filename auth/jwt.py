@@ -3,7 +3,8 @@ from auth.models import AuthUser
 from fastapi import status, Depends, HTTPException
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-from users import get_by_username, User
+from models.user import User
+from users import get_by_username
 from configuration import get_config_parameter
 from datetime import datetime, timedelta, timezone
 import jwt
@@ -40,7 +41,7 @@ def issue_token(user: AuthUser) -> str:
         algorithm="HS256"
     )
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     parts = token.split(".")
     logger.debug(f"jwt(4)={token[:5]}, parts={len(parts)}, lengths={[len(p) for p in parts]}")
     username : str | None = None
@@ -63,7 +64,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Illegal token")
 
-def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
+async def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
     if not user.is_admin():
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
     return user
