@@ -26,7 +26,7 @@ def get_db_user(username: str) -> Optional[dict]:
 def get_all_db_users() -> list[dict]:
     return [v for v in mock_user_data.values()]
 
-def get_statistics(role: str = "") -> dict[str, int]:
+def get_statistics(role: Optional[str]) -> dict[str, int]:
     return {
         k: statistics.get(k, 0) for k in mock_user_data if (not role or mock_user_data[k]["role"] == role)
     }
