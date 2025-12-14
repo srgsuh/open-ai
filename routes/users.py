@@ -1,14 +1,9 @@
 from typing import Optional
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 from logs import logger
 from auth import require_admin
 from models.user import User
 from users import get_statistics
-
-class UserStatistics(BaseModel):
-    username: str
-    requests: int
 
 users_router = APIRouter()
 @users_router.get("/statistics", response_model=dict[str, int])
