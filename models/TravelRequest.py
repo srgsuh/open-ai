@@ -17,6 +17,3 @@ class TravelRequest(BaseModel):
             raise ValueError('Field "isCapital" can only be provided with the field "countryTo"')
 
         return self
-    
-    def whereTo(self) -> str:
-        return self.countryTo or self.cityTo or ""
