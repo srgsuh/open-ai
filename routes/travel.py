@@ -12,16 +12,14 @@ travel_router = APIRouter(dependencies=[Depends(collect_user_statistics)])
 async def post_info(request: TravelRequest) -> TravelResponse:
     logger.debug(f"post_info. Request: {request}")
     data = complex_service(
-        request.countryFrom,
-        request.countryTo,
-        request.isCapital == True,
-        request.isWeather == True,
-        request.isCurrency == True
+        countryFrom=request.countryFrom,
+        countryTo=request.countryTo,
+        cityTo=request.cityTo,
     )
-    return travel_response_mapper(data)
+    return travel_response_mapper(data, request.cityTo, bool(request.isCapital), bool(request.isWeather), bool(request.isCurrency))
 
 @travel_router.get("/info", response_model=TravelResponse, response_model_exclude_none=True)
 async def get_info(countryFrom: str, countryTo: str) -> TravelResponse:
     logger.debug(f"get_info. countryFrom: {countryFrom}, countryTo: {countryTo}")
-    data = complex_service(countryFrom, countryTo, True, True, True)
+    data = complex_service(countryFrom, countryTo)
     return travel_response_mapper(data)

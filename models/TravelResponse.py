@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 class TravelResponse(BaseModel):
     countryFrom: str
     countryTo: str
+    cityTo: str | None = None
     capitalTo: str | None = None
     weatherTo: str | None = None
     currencyCodeFrom: str | None = Field(default=None, min_length=3, max_length=3)

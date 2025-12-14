@@ -1,14 +1,21 @@
 from .TravelResponse import TravelResponse
-from services.complex_service import ComplexTravelData
 
-def travel_response_mapper(data: ComplexTravelData) -> TravelResponse:
+def travel_response_mapper(
+        data: dict,
+        cityTo: str | None = None,
+        isCapital: bool = True,
+        isWeather: bool = True,
+        isCurrency: bool = True
+) -> TravelResponse:
     return TravelResponse(
-        countryFrom=data.country_from,
-        countryTo=data.country_to,
-        capitalTo=data.capital_to,
-        weatherTo=data.weather_to,
-        currencyCodeFrom=data.currency_from_code,
-        currencyCodeTo=data.currency_to_code,
-        currencyNameFrom=data.currency_from_name,
-        currencyNameTo=data.currency_to_name
+        countryFrom=data["country_from"],
+        countryTo=data["country_to"],
+        cityTo=cityTo,
+        capitalTo=data["capital_to"] if isCapital else None,
+        weatherTo=data["weather_to"] if isWeather else None,
+        currencyCodeFrom=data["currency_from_code"] if isCurrency else None,
+        currencyCodeTo=data["currency_to_code"] if isCurrency else None,
+        currencyNameFrom=data["currency_from_name"] if isCurrency else None,
+        currencyNameTo=data["currency_to_name"] if isCurrency else None,
+        exchangeRate=data["exchange_rate"] if isCurrency else None
     )
