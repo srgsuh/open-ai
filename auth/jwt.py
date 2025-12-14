@@ -40,7 +40,7 @@ def issue_token(user: AuthUser) -> str:
         algorithm="HS256"
     )
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     parts = token.split(".")
     logger.debug(f"jwt(4)={token[:5]}, parts={len(parts)}, lengths={[len(p) for p in parts]}")
     username : str | None = None
@@ -62,3 +62,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         return user
     
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Illegal token")
+
+def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
+    if not user.is_admin():
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Unauthorized access")
+    return user
