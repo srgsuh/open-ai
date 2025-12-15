@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
-    AsyncSession,
     create_async_engine,
+    AsyncSession,
     async_sessionmaker,
 )
 from sqlalchemy.orm import declarative_base
@@ -18,8 +18,14 @@ def build_engine() -> AsyncEngine:
         database=get_config_parameter("POSTGRES_DB"),
         port=int(get_config_parameter("POSTGRES_PORT"))
     )
-    engine: AsyncEngine = create_async_engine(db_url)
+    engine: AsyncEngine = create_async_engine(db_url, echo=True,future=True)
 
     return engine
 
 engine: AsyncEngine = build_engine()
+
+session_maker: async_sessionmaker = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
