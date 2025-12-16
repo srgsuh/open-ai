@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
 )
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import URL
 import urllib.parse
 from configuration import get_config_parameter
@@ -24,8 +25,11 @@ def build_engine() -> AsyncEngine:
 
 engine: AsyncEngine = build_engine()
 
-session_maker: async_sessionmaker = async_sessionmaker(
+AsyncSessionLocal: async_sessionmaker = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
+class Base(AsyncAttrs, DeclarativeBase):
+    pass
