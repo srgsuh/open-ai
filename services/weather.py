@@ -3,11 +3,13 @@ import requests
 from configuration import get_config_parameter
 from datetime import datetime
 
+WEATHER_DEFAULT_URL: str = "http://api.weatherapi.com/v1/current.json"
+
 def get_api_key() -> str:
     return get_config_parameter("WEATHER_API_KEY")
 
 def get_url() -> str:
-    return get_config_parameter("WEATHER_URL_CURRENT")
+    return get_config_parameter("WEATHER_URL_CURRENT", WEATHER_DEFAULT_URL)
 
 __placeholder: str = "unknown"
 __empty_dict: dict[str, Any] = {}

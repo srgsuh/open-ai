@@ -6,9 +6,10 @@ SUCCESS_KEY: str = "success"
 RATES_KEY: str = "rates"
 DATE_KEY: str = "date"
 FIXER_DATE_FMT: str = get_config_parameter("FIXER_DATE_FMT", "%Y-%m-%d")
+FIXER_DEFAULT_URL: str = "http://data.fixer.io/api/latest"
 
 def __get_url() -> str:
-    return get_config_parameter("FIXER_URL")
+    return get_config_parameter("FIXER_URL", FIXER_DEFAULT_URL)
 
 def __get_api_key() -> str:
     return get_config_parameter("FIXER_API_KEY")
