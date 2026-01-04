@@ -1,3 +1,4 @@
+pydantic
 fastapi[standard]
 uvicorn[standard]
 loguru
