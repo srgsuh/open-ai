@@ -6,10 +6,10 @@ from configuration import get_config_parameter
 URL: str = "http://localhost:11434/api/chat"
 MODEL_NAME: str = "phi3"
 
-def __get_url() -> str:
+def get_url() -> str:
     return get_config_parameter("OLLAMA_URL", URL)
 
-def __get_model_name() -> str:
+def get_model_name() -> str:
     return get_config_parameter("OLLAMA_MODEL", MODEL_NAME)
 
 class ChatHistory:
@@ -27,8 +27,8 @@ class ChatHistory:
     
 class ChatLLM:
     def __init__(self, system_content: str, **options) -> None:
-        self.__url = __get_url()
-        self.__model_name = __get_model_name()
+        self.__url = get_url()
+        self.__model_name = get_model_name()
         self.__history = ChatHistory(system_content)
         if not "temperature" in options:
             options["temperature"] = 0.0
