@@ -19,6 +19,13 @@ class ComplexTravelData:
     weather_to: str | None
     exchange_rate: float | None
 
+_chat: ChatLLM
+def get_chat() -> ChatLLM:
+    global _chat
+    if not _chat:
+        _chat = ChatLLM(sr.SYSTEM_CONTENT)
+    return _chat
+
 def complex_service(
         countryFrom: str,
         countryTo: str,
@@ -26,7 +33,7 @@ def complex_service(
         isWeather: bool = False,
         isCurrency: bool = False) -> ComplexTravelData:
     logger.debug(f"complex_service countryFrom={countryFrom}, countryTo={countryTo}, isCapital={isCapital}, isWeather={isWeather}, isCurrency={isCurrency}")
-    chat = ChatLLM(sr.SYSTEM_CONTENT).user_message(f"from {countryFrom}' to {countryTo}")
+    chat = get_chat().user_message(f"from {countryFrom}' to {countryTo}")
     raw_response: str = chat.request()
     logger.debug(f"complex_service raw_response={raw_response}")
     json_data: dict | None = extract_json(raw_response)
