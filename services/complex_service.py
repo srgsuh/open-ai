@@ -2,7 +2,7 @@ from logs import logger
 import services.system_rules as sr
 from services.chat_request import ChatLLM
 from services.extract_json import extract_json
-from services.fixer import CURRENCY_RATE
+from services.exchange_rates import get_exchange_rate
 from services.exceptions import ServiceException
 from services.weather import get_weather
 from dataclasses import dataclass
@@ -44,5 +44,6 @@ def complex_service(
         currency_to_name=json_data[sr.currency_to_name] if isCurrency else None,
         capital_to=json_data[sr.capital_to] if isCapital else None,
         weather_to=get_weather(json_data[sr.capital_to]) if isWeather else None,
-        exchange_rate=CURRENCY_RATE.get_rate(json_data[sr.currency_from_code], json_data[sr.currency_to_code]) if isCurrency else None
+        exchange_rate=get_exchange_rate(json_data[sr.currency_from_code], json_data[sr.currency_to_code]) if isCurrency else None
+        
     )
