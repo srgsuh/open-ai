@@ -7,7 +7,7 @@ from models.mappings import travel_response_mapper
 
 travel_router = APIRouter()
 
-@travel_router.post("/info", response_model=TravelResponse, response_model_exclude_none=True)
+@travel_router.post("/", response_model=TravelResponse, response_model_exclude_none=True)
 async def post_info(request: TravelRequest) -> TravelResponse:
     logger.debug(f"post_info. Request: {request}")
     data = complex_service(
@@ -19,7 +19,7 @@ async def post_info(request: TravelRequest) -> TravelResponse:
     )
     return travel_response_mapper(data)
 
-@travel_router.get("/info", response_model=TravelResponse, response_model_exclude_none=True)
+@travel_router.get("/", response_model=TravelResponse, response_model_exclude_none=True)
 async def get_info(countryFrom: str, countryTo: str) -> TravelResponse:
     logger.debug(f"get_info. countryFrom: {countryFrom}, countryTo: {countryTo}")
     data = complex_service(countryFrom, countryTo, True, True, True)
