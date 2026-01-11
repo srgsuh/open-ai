@@ -12,6 +12,8 @@ build
 .gitignore
 .env
 .venv
+.vscode
+.cursor
 venv/
 ENV/
 env/

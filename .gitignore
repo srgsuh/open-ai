@@ -1,5 +1,6 @@
 activate_env.bat
 .vscode
+.cursor
 .env
 __pycache__
 .pytest_cache
