@@ -45,5 +45,4 @@ def complex_service(
         capital_to=json_data[sr.capital_to] if isCapital else None,
         weather_to=get_weather(json_data[sr.capital_to]) if isWeather else None,
         exchange_rate=get_exchange_rate(json_data[sr.currency_from_code], json_data[sr.currency_to_code]) if isCurrency else None
-        
     )
