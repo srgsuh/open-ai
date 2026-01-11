@@ -3,14 +3,14 @@ from typing import Any, Self
 from services.extract_json import extract_json
 from configuration import get_config_parameter
 
-URL: str = "http://localhost:11434/api/chat"
-MODEL_NAME: str = "phi3"
+DEFAULT_OLLAMA_URL: str = "http://localhost:11434/api/chat"
+DEFAULT_MODEL_NAME: str = "phi3:mini"
 
 def get_url() -> str:
-    return get_config_parameter("OLLAMA_URL", URL)
+    return get_config_parameter("OLLAMA_URL", DEFAULT_OLLAMA_URL)
 
 def get_model_name() -> str:
-    return get_config_parameter("OLLAMA_MODEL", MODEL_NAME)
+    return get_config_parameter("OLLAMA_MODEL", DEFAULT_MODEL_NAME)
 
 class ChatHistory:
     SYS_ROLE: str = "system"
