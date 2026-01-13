@@ -59,7 +59,7 @@ def get_rates() -> dict:
     
     return RATES
 
-def _get_exchange_rate(code_from: str, code_to: str) -> float:
+def get_exchange_rate(code_from: str, code_to: str) -> float:
     rates = get_rates()
     def _get_rate(code: str) -> float:
         rate = rates.get(code)
@@ -71,18 +71,9 @@ def _get_exchange_rate(code_from: str, code_to: str) -> float:
     rate_to = _get_rate(code_to)
     return rate_to / rate_from
 
-def get_exchange_rate(code_from: str, code_to: str) -> float | None:
-    rate: float | None = None
-    try:
-        rate = _get_exchange_rate(code_from, code_to)
-    except Exception as e:
-        logger.exception("Error retrieving exhange rate", str(e))
-
-    return rate
-
 def get_exchange_rate_data(code_from: str, code_to: str, is_full_names: bool = False) -> dict:
     try:
-        rate = _get_exchange_rate(code_from, code_to)
+        rate = get_exchange_rate(code_from, code_to)
         rate_data = {
             "currency_from": code_from,
             "currency_to": code_to,
