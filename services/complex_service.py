@@ -19,10 +19,10 @@ class ComplexTravelData:
     weather_to: str | None
     exchange_rate: float | None
 
-_chat: ChatLLM
+_chat: ChatLLM | None = None
 def get_chat() -> ChatLLM:
     global _chat
-    if not _chat:
+    if _chat is None:
         _chat = ChatLLM(sr.SYSTEM_CONTENT)
     return _chat
 
@@ -41,6 +41,13 @@ def complex_service(
     
     if not json_data:
         raise ServiceException("Internal service error")
+
+    weather: str | None = get_weather(json_data[sr.capital_to]) if isWeather else None
+    
+    rate: float | None = (
+        get_exchange_rate(json_data[sr.currency_from_code], json_data[sr.currency_to_code]) if isCurrency
+        else None
+    )
     
     return ComplexTravelData(
         country_from=json_data[sr.country_from],
@@ -50,6 +57,6 @@ def complex_service(
         currency_to_code=json_data[sr.currency_to_code] if isCurrency else None,
         currency_to_name=json_data[sr.currency_to_name] if isCurrency else None,
         capital_to=json_data[sr.capital_to] if isCapital else None,
-        weather_to=get_weather(json_data[sr.capital_to]) if isWeather else None,
-        exchange_rate=get_exchange_rate(json_data[sr.currency_from_code], json_data[sr.currency_to_code]) if isCurrency else None
+        weather_to=weather,
+        exchange_rate=rate
     )
