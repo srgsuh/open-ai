@@ -1,6 +1,5 @@
 import requests
 from typing import Any, Self
-from services.extract_json import extract_json
 from configuration import get_config_parameter
 
 DEFAULT_OLLAMA_URL: str = "http://localhost:11434/api/chat"
