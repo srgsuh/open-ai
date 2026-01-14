@@ -7,3 +7,7 @@ __pycache__
 logs
 clear_logs.bat
 test_chat_integration.py
+add.yaml
+base.yaml
+template-1-ec2-instance.yaml
+template-2-network-infrastructure.yaml
