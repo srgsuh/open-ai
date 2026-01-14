@@ -90,6 +90,7 @@ Parameters:
   # ===== ALB and HTTPS Configuration =====
   AcmCertificateArn:
     Type: String
+    Default: arn:aws:acm:il-central-1:773769103104:certificate/7b53ee00-977b-4b27-aa72-cd89b4007ce5
     Description: ACM certificate ARN in the same region for ALB HTTPS listener
 
   AlbIdleTimeoutSeconds:
@@ -107,6 +108,12 @@ Parameters:
     Type: String
     Description: Existing Cognito App Client ID (JWT audience)
     Default: 2chpfairj5rakt9lffar3gnv3h
+
+  # ===== Lambda Configuration =====
+  AuthLambdaArn:
+    Type: String
+    Default: arn:aws:lambda:il-central-1:773769103104:function:lambda-auth-il-central-1
+    Description: ARN of the Lambda function for authentication (auth/login and auth/refresh endpoints)
 
 Resources:
   # ================================================================
@@ -341,7 +348,7 @@ Resources:
             --name travel_info \
             --restart=always \
             --network host \
-            -e LOGGER_LEVEL=DEBUG \
+            -e LOGGER_LEVEL=INFO \
             -e OLLAMA_MODEL_NAME="${OllamaModel}" \
             -e REGION="$REGION" \
             -e USER_POOL_ID="${ExistingUserPoolId}" \
@@ -412,6 +419,27 @@ Resources:
         - Key: Name
           Value: !Sub '${ProjectName}-tg'
 
+  # Target Group for Lambda Function
+  LambdaTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub '${ProjectName}-lambda-tg'
+      TargetType: lambda
+      Targets:
+        - Id: !Ref AuthLambdaArn
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-lambda-tg'
+
+  # Permission for ALB to invoke Lambda function
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AuthLambdaArn
+      Principal: elasticloadbalancing.amazonaws.com
+      Action: lambda:InvokeFunction
+      SourceArn: !GetAtt AlbListenerHttps.ListenerArn
+
   # HTTP Listener - Redirect to HTTPS
   AlbListenerHttp:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -426,7 +454,7 @@ Resources:
             Port: '443'
             StatusCode: HTTP_301
 
-  # HTTPS Listener - Forward to Target Group
+  # HTTPS Listener with path-based routing rules
   AlbListenerHttps:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -439,6 +467,34 @@ Resources:
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref AlbTargetGroup
+
+  # Listener Rule: /auth/login -> Lambda
+  AlbListenerRuleAuthLogin:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref AlbListenerHttps
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - '/auth/login'
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref LambdaTargetGroup
+
+  # Listener Rule: /auth/refresh -> Lambda
+  AlbListenerRuleAuthRefresh:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref AlbListenerHttps
+      Priority: 2
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - '/auth/refresh'
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref LambdaTargetGroup
 
 Outputs:
   # Networking Outputs
