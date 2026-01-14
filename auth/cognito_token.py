@@ -43,7 +43,7 @@ def get_current_token(token: str = Depends(oauth2_scheme)) -> dict:
         payload = jwt.decode(
             token,
             public_key,
-            algorithms=public_key["alg"],
+            algorithms=public_key.get("alg", "RS256"),
             issuer=COGNITO_ISSUER,
             options={"verify_aud": False}
         )
