@@ -2,6 +2,7 @@ activate_env.bat
 .vscode
 .cursor
 .env
+venv/
 __pycache__
 .pytest_cache
 logs
