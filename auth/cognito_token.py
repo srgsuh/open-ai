@@ -6,12 +6,14 @@ from configuration import get_config_parameter
 
 user_pool_id = get_config_parameter("USER_POOL_ID")
 region_id = get_config_parameter("AWS_REGION_ID")
+
 COGNITO_ISSUER = (
     f"https://cognito-idp.{region_id}.amazonaws.com/{user_pool_id}"
 )
 COGNITO_JWKS_URL = f"{COGNITO_ISSUER}/.well-known/jwks.json"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 invalid_token = HTTPException(status_code=401, detail="Wrong token", headers={"WWW-Authenticate": "Bearer"})
 
 def fetch_cognito_keys() -> list[dict]:
