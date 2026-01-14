@@ -1,19 +1,32 @@
+# logs.py
+import logging
+import os
 import sys
-from loguru import logger
 from configuration import get_config_parameter
 
-FILE_DEBUG_LEVEL: str = get_config_parameter("FILE_DEBUG_LEVEL", "")
-CONSOLE_DEBUG_LEVEL: str = get_config_parameter("CONSOLE_DEBUG_LEVEL", "")
+# Read environment variable
+DEBUG_LEVEL = get_config_parameter("DEBUG_LEVEL", "INFO").upper()
 
-LOG_FORMAT: str = "{time:HH:mm:ss}: {message}"
+LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 
-logger.remove()
-try:
-    if FILE_DEBUG_LEVEL:
-        logger.add("./logs/file_{time:YYYY_MM_DD_HH_mm_ss}.log", format=LOG_FORMAT, level=FILE_DEBUG_LEVEL)
-    if CONSOLE_DEBUG_LEVEL:
-        logger.add(sys.stdout, format=LOG_FORMAT, level=CONSOLE_DEBUG_LEVEL)
-except Exception as e:
-    print(f"Logger config error: {str(e)}. Starting application without logging.")
+def _configure_logging() -> None:
+    root_logger = logging.getLogger()
 
-__all__ = ["logger"]
+    if root_logger.handlers:
+        return
+
+    level = getattr(logging, DEBUG_LEVEL, logging.INFO)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+    root_logger.setLevel(level)
+    root_logger.addHandler(handler)
+
+
+_configure_logging()
+
+logger = logging.getLogger("app")
+
+def get_logger(name: str) -> logging.Logger:
+    return logging.getLogger(name)
