@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from services.exchange_rates import get_exchange_rate
+from services.exchange_rates import get_exchange_rate_data
 from services.weather import get_weather
 
 services_router: APIRouter = APIRouter()
 
 @services_router.get("/hello")
-async def process_greeting(name: str) -> dict:
+async def process_hello(name: str) -> dict:
     return {
         "status": "OK",
         "greeting": f"Hello, {name}"
@@ -28,7 +28,7 @@ async def process_currency(currency_from: str, currency_to: str, full_names: boo
     """
     Get the exchange rate between two currencies.
     """
-    exchange_info = get_exchange_rate(currency_from, currency_to, full_names)
+    exchange_info = get_exchange_rate_data(currency_from, currency_to, full_names)
     return {
         "status": "OK",
         "exchange_info": exchange_info
