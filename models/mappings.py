@@ -10,5 +10,6 @@ def travel_response_mapper(data: ComplexTravelData) -> TravelResponse:
         currencyCodeFrom=data.currency_from_code,
         currencyCodeTo=data.currency_to_code,
         currencyNameFrom=data.currency_from_name,
-        currencyNameTo=data.currency_to_name
+        currencyNameTo=data.currency_to_name,
+        exchangeRate=data.exchange_rate
     )
