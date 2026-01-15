@@ -2,10 +2,8 @@
 import logging
 import os
 import sys
-from configuration import get_config_parameter
 
-# Read environment variable
-DEBUG_LEVEL = get_config_parameter("DEBUG_LEVEL", "INFO").upper()
+DEBUG_LEVEL = os.getenv("DEBUG_LEVEL", default="INFO").upper()
 
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 
