@@ -7,9 +7,9 @@ from logs import get_logger
 
 logger = get_logger("auth")
 
-user_pool_id = get_config_parameter("USER_POOL_ID")
 region_id = get_config_parameter("AWS_REGION_ID")
-app_id = get_config_parameter("USER_POOL_APP_ID", "")
+user_pool_id = get_config_parameter("USER_POOL_ID")
+app_id = get_config_parameter("USER_POOL_APP_ID")
 
 COGNITO_ISSUER = (
     f"https://cognito-idp.{region_id}.amazonaws.com/{user_pool_id}"
@@ -75,3 +75,14 @@ def get_current_access_token(payload: dict = Depends(get_current_token)) -> dict
         raise invalid_token
 
     return payload
+
+def is_admin_grp(grp_name: str) -> bool:
+    return grp_name == "grp_administrators"
+
+def get_current_admin_token(payload: dict = Depends(get_current_access_token)) -> dict:
+    user_groups: list[str] = payload.get("cognito:groups", [])
+    is_admin: bool = any((is_admin_grp(grp) for grp in user_groups))
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return payload
+        
