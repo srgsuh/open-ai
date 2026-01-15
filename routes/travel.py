@@ -21,11 +21,16 @@ async def post_info(request: TravelRequest, user_data = Depends(get_current_user
         request.isWeather == True,
         request.isCurrency == True
     )
-    return travel_response_mapper(data)
+    response = travel_response_mapper(data)
+    logger.debug(f"post_info. Response: {response}")
+    return response
 
 @travel_router.get("/", response_model=TravelResponse, response_model_exclude_none=True)
 async def get_info(request: TravelRequest = Depends(), user_data = Depends(get_current_admin_user)) -> TravelResponse:
     logger.debug(f"get_info. Request: {request}")
     logger.debug(f"get_info. User: {user_data}")
     data = complex_service(request.countryFrom, request.countryTo, True, True, True)
-    return travel_response_mapper(data)
+    response = travel_response_mapper(data)
+    logger.debug(f"get_info. Response: {response}")
+
+    return response
