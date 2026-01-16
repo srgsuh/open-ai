@@ -21,13 +21,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 invalid_token = HTTPException(status_code=401, detail="Wrong token", headers={"WWW-Authenticate": "Bearer"})
 
-def fetch_cognito_keys() -> list[dict]:
+def _fetch_cognito_keys() -> list[dict]:
     response: requests.Response = requests.get(COGNITO_JWKS_URL)
     response.raise_for_status()
     jwks: dict = response.json()
     return jwks.get("keys", [])
 
-def extract_kid(token: str) -> str:
+def _extract_kid(token: str) -> str:
     header: dict = jwt.get_unverified_header(token)
     key_id = header.get("kid")
     if not key_id:
@@ -35,10 +35,10 @@ def extract_kid(token: str) -> str:
         raise invalid_token
     return key_id
 
-def get_current_access_token(token: str = Depends(oauth2_scheme)) -> dict:
+def get_user_token(token: str = Depends(oauth2_scheme)) -> dict:
     logger.debug(".get_current_token token=%s...%s", token[:5], token[-5:])
-    kid = extract_kid(token)
-    keys = fetch_cognito_keys()
+    kid = _extract_kid(token)
+    keys = _fetch_cognito_keys()
 
     public_key: Optional[dict] = next((k for k in keys if k["kid"] == kid), None)
 
@@ -73,14 +73,12 @@ def get_current_access_token(token: str = Depends(oauth2_scheme)) -> dict:
     
     return payload
 
-
-def is_admin_grp(grp_name: str) -> bool:
+def _is_admin_grp(grp_name: str) -> bool:
     return grp_name == "grp_administrators"
 
-def get_current_admin_token(payload: dict = Depends(get_current_access_token)) -> dict:
+def get_admin_token(payload: dict = Depends(get_user_token)) -> dict:
     user_groups: list[str] = payload.get("cognito:groups", [])
-    is_admin: bool = any((is_admin_grp(grp) for grp in user_groups))
+    is_admin: bool = any((_is_admin_grp(grp) for grp in user_groups))
     if not is_admin:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return payload
-        
+    return payload     
