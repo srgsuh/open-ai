@@ -6,7 +6,7 @@ Description: >
 Parameters:
   ProjectName:
     Type: String
-    Default: fastapi-alb-deploy
+    Default: fastapi-alb
     Description: Project name used for resource naming
 
   # ===== VPC and Networking =====
