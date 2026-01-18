@@ -342,15 +342,7 @@ Resources:
 
           echo "Starting FastAPI container..."
           # Run FastAPI container with environment variables
-          docker run -d \
-            --name travel_info \
-            --restart=always \
-            --network host \
-            -e LOGGER_LEVEL=INFO \
-            -e OLLAMA_MODEL_NAME="${OllamaModel}" \
-            -e REGION="$REGION" \
-            -e USER_POOL_ID="${ExistingUserPoolId}" \
-            -e APP_CLIENT_ID="${ExistingUserPoolClientId}" \
+          docker run -d --name travel_app --restart=always --network host \
             "$IMAGE_URI"
 
           echo "Installing Ollama..."

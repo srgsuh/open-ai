@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter
 from services.exchange_rates import get_exchange_rate_data
 from services.weather import get_weather
@@ -5,10 +6,10 @@ from services.weather import get_weather
 services_router: APIRouter = APIRouter()
 
 @services_router.get("/hello")
-async def process_hello(name: str) -> dict:
+async def process_hello(name: Optional[str] = None) -> dict:
     return {
         "status": "OK",
-        "greeting": f"Hello, {name}"
+        "greeting": f"Hello, {name if name is not None else "Anonymous"}"
     }
 
 @services_router.get("/weather")

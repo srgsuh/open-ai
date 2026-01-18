@@ -11,7 +11,7 @@ COPY . .
 EXPOSE 8000
 
 ENV DEBUG_LEVEL=DEBUG
-ENV OLLAMA_URL=http://host.docker.internal:11434/api/chat
+ENV OLLAMA_URL=http://localhost:11434/api/chat
 ENV OLLAMA_MODEL=phi3:mini
 ENV RATE_DEFAULT_URL=https://api.exchangerate.host
 ENV FIXER_DATE_FMT=%Y-%m-%d
