@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: >
+Description:
   Production-ready FastAPI deployment on ECS Fargate behind an internet-facing
   Application Load Balancer with HTTPS termination and request-based auto-scaling.
 
@@ -24,7 +24,6 @@ Parameters:
   PublicSubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
     Description: List of existing PUBLIC subnet IDs for the internet-facing ALB (minimum 2 in different AZs)
-    Default: "subnet-0123456789abcdef0,subnet-0abcdef0123456789"
 
   AcmCertificateArn:
     Type: String
