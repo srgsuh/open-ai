@@ -294,8 +294,19 @@ Resources:
             Principal:
               Service: application-autoscaling.amazonaws.com
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSApplicationAutoscalingECSServiceRolePolicy
+      Policies:
+        - PolicyName: ECSServiceAutoScalingPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:DescribeServices
+                  - ecs:UpdateService
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:DeleteAlarms
+                Resource: '*'
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}-app-autoscaling-role'
