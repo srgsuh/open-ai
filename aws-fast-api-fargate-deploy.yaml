@@ -481,7 +481,7 @@ Resources:
     Properties:
       MaxCapacity: !Ref MaxTaskCount
       MinCapacity: !Ref MinTaskCount
-      ResourceId: !Sub service/${EcsCluster}/${EcsService}
+      ResourceId: !Sub 'service/${EcsCluster}/${ProjectName}-service'
       RoleARN: !GetAtt ApplicationAutoScalingRole.Arn
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
