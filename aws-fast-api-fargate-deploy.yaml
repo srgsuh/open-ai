@@ -100,10 +100,10 @@ Parameters:
     Description: Retention period in days for CloudWatch Logs
 
   # ===== API Keys Configuration =====
-  FixerApiKey:
+  RateApiKey:
     Type: String
     NoEcho: true
-    Description: API key for Fixer.io exchange rate service
+    Description: API key for exchangerate.host API service
 
   WeatherApiKey:
     Type: String
@@ -366,8 +366,8 @@ Resources:
             - ContainerPort: !Ref ContainerPort
               Protocol: tcp
           Environment:
-            - Name: FIXER_API_KEY
-              Value: !Ref FixerApiKey
+            - Name: RATE_API_KEY
+              Value: !Ref RateApiKey
             - Name: WEATHER_API_KEY
               Value: !Ref WeatherApiKey
           Command:
@@ -375,7 +375,7 @@ Resources:
             - -c
             - |
               echo "Starting FastAPI application with API keys configured..."
-              if [ -n "$$FIXER_API_KEY" ]; then echo "FIXER_API_KEY is configured"; fi
+              if [ -n "$$RATE_API_KEY" ]; then echo "RATE_API_KEY is configured"; fi
               if [ -n "$$WEATHER_API_KEY" ]; then echo "WEATHER_API_KEY is configured"; fi
               exec uvicorn main:app --host 0.0.0.0 --port 8000
           LogConfiguration:
