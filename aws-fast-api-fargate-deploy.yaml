@@ -478,6 +478,7 @@ Resources:
 
   EcsServiceScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
+    DependsOn: EcsService
     Properties:
       MaxCapacity: !Ref MaxTaskCount
       MinCapacity: !Ref MinTaskCount
