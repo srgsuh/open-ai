@@ -95,7 +95,7 @@ Parameters:
 
   LogGroupRetentionInDays:
     Type: Number
-    Default: 14
+    Default: 1
     Description: Retention period in days for CloudWatch Logs
 
   # ===== ALB Access Logs =====
@@ -106,7 +106,7 @@ Parameters:
 
   AlbAccessLogsPrefix:
     Type: String
-    Default: alb/access-logs/
+    Default: alb/access-logs
     Description: Prefix within the S3 bucket for ALB access logs
 
 Resources:
