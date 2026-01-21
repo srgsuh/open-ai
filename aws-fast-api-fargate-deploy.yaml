@@ -16,10 +16,6 @@ Parameters:
     Default: vpc-01eb545134560739e
     Description: Existing VPC ID where resources will be created
 
-  InternetGatewayId:
-    Type: String
-    Default: igw-02e8244f3df25dcc9
-    Description: Existing Internet Gateway ID already attached to the VPC
 
   PublicSubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
@@ -88,15 +84,31 @@ Parameters:
     Description: Cooldown period in seconds after a scale-out activity completes
 
   # ===== CloudWatch Logging Configuration =====
+  LogGroupSuffix:
+    Type: String
+    Default: "1"
+    Description: Suffix for the CloudWatch Logs log group name
+
   LogGroupName:
     Type: String
-    Default: /ecs/fastapi-fargate-service
-    Description: Name of the CloudWatch Logs log group for container logs
+    Default: ""
+    Description: Name of the CloudWatch Logs log group for container logs (defaults to /ecs/<StackName>/<Suffix> if empty)
 
   LogGroupRetentionInDays:
     Type: Number
     Default: 1
     Description: Retention period in days for CloudWatch Logs
+
+  # ===== API Keys Configuration =====
+  FixerApiKey:
+    Type: String
+    NoEcho: true
+    Description: API key for Fixer.io exchange rate service
+
+  WeatherApiKey:
+    Type: String
+    NoEcho: true
+    Description: API key for WeatherAPI.com service
 
   # ===== ALB Access Logs =====
   AlbAccessLogsBucketName:
@@ -108,6 +120,9 @@ Parameters:
     Type: String
     Default: alb/access-logs
     Description: Prefix within the S3 bucket for ALB access logs
+
+Conditions:
+  HasCustomLogGroupName: !Not [!Equals [!Ref LogGroupName, '']]
 
 Resources:
   # ================================================================
@@ -243,7 +258,10 @@ Resources:
   ApplicationLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Ref LogGroupName
+      LogGroupName: !If
+        - HasCustomLogGroupName
+        - !Ref LogGroupName
+        - !Sub '/ecs/${AWS::StackName}/${LogGroupSuffix}'
       RetentionInDays: !Ref LogGroupRetentionInDays
 
   # ================================================================
@@ -347,10 +365,26 @@ Resources:
           PortMappings:
             - ContainerPort: !Ref ContainerPort
               Protocol: tcp
+          Environment:
+            - Name: FIXER_API_KEY
+              Value: !Ref FixerApiKey
+            - Name: WEATHER_API_KEY
+              Value: !Ref WeatherApiKey
+          Command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting FastAPI application with API keys configured..."
+              if [ -n "$$FIXER_API_KEY" ]; then echo "FIXER_API_KEY is configured"; fi
+              if [ -n "$$WEATHER_API_KEY" ]; then echo "WEATHER_API_KEY is configured"; fi
+              exec uvicorn main:app --host 0.0.0.0 --port 8000
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref LogGroupName
+              awslogs-group: !If
+                - HasCustomLogGroupName
+                - !Ref LogGroupName
+                - !Sub '/ecs/${AWS::StackName}/${LogGroupSuffix}'
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: ecs
           Essential: true
