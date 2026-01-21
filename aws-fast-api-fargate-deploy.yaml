@@ -110,17 +110,6 @@ Parameters:
     NoEcho: true
     Description: API key for WeatherAPI.com service
 
-  # ===== ALB Access Logs =====
-  AlbAccessLogsBucketName:
-    Type: String
-    Default: my-alb-access-logs-bucket
-    Description: S3 bucket name where ALB access logs will be delivered
-
-  AlbAccessLogsPrefix:
-    Type: String
-    Default: alb/access-logs
-    Description: Prefix within the S3 bucket for ALB access logs
-
 Conditions:
   HasCustomLogGroupName: !Not [!Equals [!Ref LogGroupName, '']]
 
@@ -433,12 +422,6 @@ Resources:
       LoadBalancerAttributes:
         - Key: deletion_protection.enabled
           Value: 'false'
-        - Key: access_logs.s3.enabled
-          Value: 'true'
-        - Key: access_logs.s3.bucket
-          Value: !Ref AlbAccessLogsBucketName
-        - Key: access_logs.s3.prefix
-          Value: !Ref AlbAccessLogsPrefix
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}-alb'
