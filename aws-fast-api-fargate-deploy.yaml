@@ -125,7 +125,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub '${ProjectName}-private-subnet-a'
+          Value: !Sub 'sn-priv-${ProjectName}'
 
   PrivateSubnetB:
     Type: AWS::EC2::Subnet
@@ -138,49 +138,56 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub '${ProjectName}-private-subnet-b'
+          Value: !Sub 'sn-priv-${ProjectName}'
 
-  PrivateRouteTableA:
+  PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcId
       Tags:
         - Key: Name
-          Value: !Sub '${ProjectName}-private-rt-a'
+          Value: !Sub 'rt-priv-${ProjectName}'
 
-  PrivateRouteTableB:
-    Type: AWS::EC2::RouteTable
+  # Elastic IP for NAT Gateway (shared for both private subnets)
+  NatEip:
+    Type: AWS::EC2::EIP
     Properties:
-      VpcId: !Ref VpcId
+      Domain: vpc
       Tags:
         - Key: Name
-          Value: !Sub '${ProjectName}-private-rt-b'
+          Value: !Sub '${ProjectName}-nat-eip'
 
-  PrivateRouteA:
+  # NAT Gateway in an existing public subnet (first from the provided list)
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEip.AllocationId
+      SubnetId: !Select
+        - 0
+        - !Ref PublicSubnetIds
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-nat-gateway'
+
+  # Route from private route table to NAT Gateway (used by both private subnets)
+  PrivateRouteToNat:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref PrivateRouteTableA
+      RouteTableId: !Ref PrivateRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGatewayId
-
-  PrivateRouteB:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTableB
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGatewayId
+      NatGatewayId: !Ref NatGateway
 
   PrivateSubnetRouteTableAssociationA:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PrivateSubnetA
-      RouteTableId: !Ref PrivateRouteTableA
+      RouteTableId: !Ref PrivateRouteTable
 
   PrivateSubnetRouteTableAssociationB:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PrivateSubnetB
-      RouteTableId: !Ref PrivateRouteTableB
+      RouteTableId: !Ref PrivateRouteTable
 
   # ================================================================
   # SECURITY GROUPS
