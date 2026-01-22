@@ -29,7 +29,7 @@ Parameters:
   # ===== Application Container Configuration =====
   ContainerImage:
     Type: String
-    Default: 773769103104.dkr.ecr.il-central-1.amazonaws.com/travel_app:latest
+    Default: 773769103104.dkr.ecr.il-central-1.amazonaws.com/info_app:latest
     Description: Full container image URI (ECR or external registry)
 
   ContainerPort:
