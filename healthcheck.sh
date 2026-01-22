@@ -1,3 +1,2 @@
 #!/bin/sh
-
-curl -f http://localhost:8080/health || exit 1
+curl -fs --max-time 2 http://localhost:8000/health || exit 1
