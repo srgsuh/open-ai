@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests import Session, Response, RequestException
 
-URL: str = "http://localhost:8000/hello"
+URL: str = "https://sergeysuhoverhov.space/api/hello"
 REQUEST_COUNT: int = 64
 MAX_WORKERS: int = 4
 
