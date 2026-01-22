@@ -290,33 +290,6 @@ Resources:
         - Key: Name
           Value: !Sub '${ProjectName}-ecs-task-role'
 
-  ApplicationAutoScalingRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub '${ProjectName}-app-autoscaling-role-${AWS::Region}'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: application-autoscaling.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: ECSServiceAutoScalingPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ecs:DescribeServices
-                  - ecs:UpdateService
-                  - cloudwatch:PutMetricAlarm
-                  - cloudwatch:DescribeAlarms
-                  - cloudwatch:DeleteAlarms
-                Resource: '*'
-      Tags:
-        - Key: Name
-          Value: !Sub '${ProjectName}-app-autoscaling-role'
 
   # ================================================================
   # ECS CLUSTER, TASK DEFINITION, AND SERVICE
@@ -367,6 +340,14 @@ Resources:
               if [ -n "$$RATE_API_KEY" ]; then echo "RATE_API_KEY is configured"; fi
               if [ -n "$$WEATHER_API_KEY" ]; then echo "WEATHER_API_KEY is configured"; fi
               exec uvicorn main:app --host 0.0.0.0 --port 8000
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - /app/healthcheck.sh
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -483,7 +464,6 @@ Resources:
       MaxCapacity: !Ref MaxTaskCount
       MinCapacity: !Ref MinTaskCount
       ResourceId: !Sub 'service/${EcsCluster}/${ProjectName}-service'
-      RoleARN: !GetAtt ApplicationAutoScalingRole.Arn
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 

@@ -10,6 +10,8 @@ COPY . .
 
 EXPOSE 8000
 
+RUN chmod +x /app/healthcheck.sh
+
 ENV DEBUG_LEVEL=DEBUG
 ENV RATE_DEFAULT_URL=https://api.exchangerate.host
 ENV FIXER_DATE_FMT=%Y-%m-%d
