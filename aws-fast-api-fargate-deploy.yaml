@@ -55,7 +55,7 @@ Parameters:
   # ===== ECS Service Scaling Configuration =====
   DesiredTaskCount:
     Type: Number
-    Default: 1
+    Default: 2
     Description: Desired number of ECS tasks to run
 
   MinTaskCount:
@@ -65,12 +65,12 @@ Parameters:
 
   MaxTaskCount:
     Type: Number
-    Default: 5
+    Default: 4
     Description: Maximum number of ECS tasks
 
   TargetRequestsPerTarget:
     Type: Number
-    Default: 100
+    Default: 16
     Description: Target ALB requests per target (per minute) for auto scaling (ALBRequestCountPerTarget)
 
   ScaleInCooldownSeconds:
