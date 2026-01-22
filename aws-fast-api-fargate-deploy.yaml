@@ -21,6 +21,11 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
     Description: List of existing PUBLIC subnet IDs for the internet-facing ALB (minimum 2 in different AZs)
 
+  InternetGatewayId:
+    Type: String
+    Default: igw-02e8244f3df25dcc9
+    Description: Existing Internet Gateway ID attached to the VPC (used for the NAT public subnet route)
+
   AcmCertificateArn:
     Type: String
     Default: arn:aws:acm:il-central-1:773769103104:certificate/7b53ee00-977b-4b27-aa72-cd89b4007ce5
@@ -118,6 +123,41 @@ Resources:
   # NETWORKING: Private Subnets and Route Tables for Fargate Tasks
   # ================================================================
 
+  # Dedicated PUBLIC subnet for NAT Gateway (ALB uses PublicSubnetIds parameter only)
+  NatPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcId
+      CidrBlock: 172.31.90.0/24
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub 'sn-pub-nat-${ProjectName}'
+
+  NatPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: !Sub 'rt-pub-nat-${ProjectName}'
+
+  NatPublicRouteToInternet:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref NatPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayId
+
+  NatPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref NatPublicSubnet
+      RouteTableId: !Ref NatPublicRouteTable
+
   PrivateSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
@@ -161,14 +201,14 @@ Resources:
         - Key: Name
           Value: !Sub '${ProjectName}-nat-eip'
 
-  # NAT Gateway in an existing public subnet (first from the provided list)
+  # NAT Gateway in the dedicated public subnet created by this stack
   NatGateway:
     Type: AWS::EC2::NatGateway
+    DependsOn:
+      - NatPublicRouteToInternet
     Properties:
       AllocationId: !GetAtt NatEip.AllocationId
-      SubnetId: !Select
-        - 0
-        - !Ref PublicSubnetIds
+      SubnetId: !Ref NatPublicSubnet
       Tags:
         - Key: Name
           Value: !Sub '${ProjectName}-nat-gateway'
