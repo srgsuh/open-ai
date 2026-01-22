@@ -24,3 +24,5 @@ htmlcov/
 *.log
 tests/
 cloud_deploy/
+run_requests.py
+run_server.py
